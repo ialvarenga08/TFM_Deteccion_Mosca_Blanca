@@ -1,5 +1,4 @@
 
-
 # Randomly splits images to 80% train, 10% validation, and 10% test, and moves them to their respective folders. 
 # This script is intended to be used in the TFLite Object Detection Colab notebook here:
 # https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb
