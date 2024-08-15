@@ -1,3 +1,9 @@
+
+
+# Randomly splits images to 80% train, 10% validation, and 10% test, and moves them to their respective folders. 
+# This script is intended to be used in the TFLite Object Detection Colab notebook here:
+# https://colab.research.google.com/github/EdjeElectronics/TensorFlow-Lite-Object-Detection-on-Android-and-Raspberry-Pi/blob/master/Train_TFLite2_Object_Detction_Model.ipynb
+
 from pathlib import Path
 import random
 import os
@@ -29,41 +35,42 @@ print('Total images: %d' % file_num)
 train_percent = 0.8  # 80% of the files go to train
 val_percent = 0.1 # 10% go to validation
 test_percent = 0.1 # 10% go to test
-train_num = int(file_num * train_percent)
-val_num = int(file_num * val_percent)
+train_num = int(file_num*train_percent)
+val_num = int(file_num*val_percent)
 test_num = file_num - train_num - val_num
 print('Images moving to train: %d' % train_num)
 print('Images moving to validation: %d' % val_num)
 print('Images moving to test: %d' % test_num)
 
-def move_file(move_me, target_path):
+# Select 80% of files randomly and move them to train folder
+for i in range(train_num):
+    move_me = random.choice(file_list)
     fn = move_me.name
     base_fn = move_me.stem
     parent_path = move_me.parent
     xml_fn = base_fn + '.xml'
-    
-    # Move the image file
-    os.rename(move_me, os.path.join(target_path, fn))
-    
-    # Move the XML file if it exists, otherwise skip
-    xml_file_path = os.path.join(parent_path, xml_fn)
-    if os.path.exists(xml_file_path):
-        os.rename(xml_file_path, os.path.join(target_path, xml_fn))
-
-# Select 80% of files randomly and move them to train folder
-for i in range(train_num):
-    move_me = random.choice(file_list)
-    move_file(move_me, train_path)
+    os.rename(move_me, train_path+'/'+fn)
+    os.rename(os.path.join(parent_path,xml_fn),os.path.join(train_path,xml_fn))
     file_list.remove(move_me)
 
 # Select 10% of remaining files and move them to validation folder
 for i in range(val_num):
     move_me = random.choice(file_list)
-    move_file(move_me, val_path)
+    fn = move_me.name
+    base_fn = move_me.stem
+    parent_path = move_me.parent
+    xml_fn = base_fn + '.xml'
+    os.rename(move_me, val_path+'/'+fn)
+    os.rename(os.path.join(parent_path,xml_fn),os.path.join(val_path,xml_fn))
     file_list.remove(move_me)
 
 # Move remaining files to test folder
 for i in range(test_num):
     move_me = random.choice(file_list)
-    move_file(move_me, test_path)
+    fn = move_me.name
+    base_fn = move_me.stem
+    parent_path = move_me.parent
+    xml_fn = base_fn + '.xml'
+    os.rename(move_me, test_path+'/'+fn)
+    os.rename(os.path.join(parent_path,xml_fn),os.path.join(test_path,xml_fn))
     file_list.remove(move_me)
