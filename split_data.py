@@ -29,8 +29,8 @@ print('Total images: %d' % file_num)
 train_percent = 0.8  # 80% of the files go to train
 val_percent = 0.1 # 10% go to validation
 test_percent = 0.1 # 10% go to test
-train_num = int(file_num*train_percent)
-val_num = int(file_num*val_percent)
+train_num = int(file_num * train_percent)
+val_num = int(file_num * val_percent)
 test_num = file_num - train_num - val_num
 print('Images moving to train: %d' % train_num)
 print('Images moving to validation: %d' % val_num)
@@ -45,12 +45,10 @@ def move_file(move_me, target_path):
     # Move the image file
     os.rename(move_me, os.path.join(target_path, fn))
     
-    # Check if the corresponding XML file exists and move it if it does
+    # Move the XML file if it exists, otherwise skip
     xml_file_path = os.path.join(parent_path, xml_fn)
     if os.path.exists(xml_file_path):
         os.rename(xml_file_path, os.path.join(target_path, xml_fn))
-    else:
-        print(f"Warning: {xml_fn} not found. Only moving image {fn}.")
 
 # Select 80% of files randomly and move them to train folder
 for i in range(train_num):
