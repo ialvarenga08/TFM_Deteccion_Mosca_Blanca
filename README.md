@@ -7,7 +7,7 @@ Click below to acces a Colab notebook for training YOLO models. It makes trainin
 
 ## Overview
 
-This repository contains the source code, models, and documentation for the Final Master's Project (TFM) focused on the design and implementation of a low-cost system for **real-time environmental monitoring (temperature and humidity) and automated early detection of the whitefly (*Bemisia tabaci*)** in greenhouses.
+This repository contains the source code, models, and documentation for the Final Master's Project (TFM) focused on the design and implementation of a low-cost system for **real-time environmental monitoring (temperature and humidity) and automated early detection of the whitefly** in greenhouses.
 
 The system combines accessible hardware (Raspberry Pi 5, sensors, camera) with open-source software (Python, Docker, Deep Learning) to create a scalable and accessible solution aimed at improving integrated pest management and optimizing growing conditions.
 
