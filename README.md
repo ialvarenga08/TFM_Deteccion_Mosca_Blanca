@@ -164,10 +164,10 @@ This project is distributed under the [Choose a license, e.g., MIT, Apache 2.0] 
 
 ## Acknowledgements
 
-* To [Your University Name] and my TFM advisor(s), [Advisor(s) Name(s)], for their guidance and support.
+* To [Universidad Politecnica de Cartagena] and my TFM advisor(s), [Pr.Pablo Matencio ], for their guidance and support.
 * To the open-source communities behind Python, TensorFlow, Ultralytics, Docker, Raspberry Pi, OpenCV, Flask, Chart.js, and other libraries used.
-* To [Mention any other individuals or resources that were helpful].
+  
 
 ## Contact
 
-[Your Name] - [Your Email or LinkedIn Profile Link]
+[Imer Alvarenga] - [https://www.linkedin.com/in/imeralvarenga/]
