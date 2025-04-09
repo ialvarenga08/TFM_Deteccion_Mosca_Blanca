@@ -1,0 +1,32 @@
+# Use a PHP image with Apache
+FROM php:8.0-apache
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y \
+        python3 \
+        python3-pip \
+        libgpiod2 \
+        git \
+        gcc \
+        libc-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions (MySQLi for database access)
+RUN docker-php-ext-install mysqli
+
+# Install Python dependencies
+COPY requirements.txt /var/www/html/requirements.txt
+RUN pip3 install --no-cache-dir -r /var/www/html/requirements.txt
+
+# Copy the application code
+COPY . /var/www/html
+COPY sensor.py /var/www/html/sensor.py
+# Set document root permissions
+RUN chown -R www-data:www-data /var/www/html
+
+# Expose the port for Apache
+EXPOSE 80
+
+# Set the command to run Apache in the foreground
+CMD ["apache2-foreground"]
