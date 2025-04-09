@@ -1,0 +1,304 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+    color: white;
+    background-color: #f4f4f4;
+}
+
+/* Header Styles */
+header {
+    position: fixed;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    height: 80px;
+    overflow: hidden;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    padding-left: 60px;
+}
+
+.logo-img {
+    width: 60px;
+    height: auto;
+    object-fit: contain;
+   /* padding: 5px;*/
+   /* padding: 5px 5px 5px 10px;*/
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-family: 'Iosevka', sans-serif; /* Use Iosevka for nav links */
+    font-weight: 400; /* Regular weight */
+}
+
+.hamburger {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Main Page Hero Section */
+.hero {
+    height: 100vh;
+   /* background: url('farm-background.jpg') no-repeat center center/cover; /* Replace with your image */
+    background-image: url('/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    position: relative;
+}
+
+.hero::before {
+    content:='';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.hero h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    z-index: 1;
+    color: rgba(214, 186, 241, 0.57);
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    z-index: 1;
+    font-family: 'Iosevka-thin';
+    font-weight:100;
+   /* color : rgba(163, 132, 194, 0.74);*/
+   /* color : rgba(190, 152, 227, 0.66);*/
+    color: rgba(205, 153, 255, 0.59);
+    padding-bottom: 20px;
+}
+
+.cta {
+    z-index: 1;
+}
+
+.cta button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: rgba(72, 46, 90, 0.34);
+     -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(10px);
+    color: (srgb 0.965 0.6244 0.3715 / 0.53);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.availability {
+    position: absolute;
+    bottom: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    z-index: 1;
+}
+
+/* Content Section for Other Pages */
+.content {
+    padding: 100px 20px 20px;
+    color: #333;
+    background-color: #fff;
+    min-height: 100vh;
+    background-image: url('/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.content h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+.container_2 {
+    color: #DFE699;
+    display: flex;
+    justify-content: center; /* Changed from flex-start to center */
+    width: 100%;
+    padding-left: 0; /* Remove the left padding to allow true centering */
+    font-family: 'Speck-Display', sans-serif;
+    padding-bottom: 5px;
+}
+/* Chart Container */
+.chart-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding-top: 50px;
+    flex-wrap: wrap;
+}
+
+.chart-card {
+    background-color: rgba(72, 47, 94, 0.34);
+    -webkit-backdrop-filter: blur(30px);
+   /* mix-blend-mode: screen;*/
+    backdrop-filter: blur(50px);
+    padding: 20px;
+    
+    border-radius: 10px;
+   /* border: 1px solid rgba(255, 255, 255, 0.2);*/
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 650px;
+}
+
+.chart-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Video Container */
+.video-container {
+    text-align: center;
+}
+
+.text-format {
+    margin-bottom: 20px;
+    color:rgba(214, 186, 241, 0.57);
+}
+
+.video {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Whiteflies Data Container */
+.data-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.data-entry {
+    background:  rgba(72, 47, 94, 0.34);
+    backdrop-filter: blur(50px);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+#whitefliesData p {
+color: #DFE699;
+}
+
+.data-entry p {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.data-image {
+    width: 100%;
+    border-radius: 5px;
+
+}
+
+/* Add Iosevka Font */
+@font-face {
+    font-family: 'Iosevka';
+    src: url('/fonts/Iosevka-Light.ttc') format('truetype');
+    font-weight: 300; /* Light */
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Iosevka-thin';
+    src: url('fonts/Iosevka-Thin.ttc') format('truetype');
+    font-weight: 100; /* Thin */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Iosevka';
+    src: url('fonts/Iosevka-Regular.ttc') format('truetype');
+    font-weight: 400; /* Regular */
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Iosevka';
+    src: url('fonts/Iosevka-ExtraLight.ttc') format('truetype');
+    font-weight: 200; /* ExtraLight */
+    font-style: normal;
+}
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav ul {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: rgba(0, 0, 0, 0.9);
+        width: 100%;
+        padding: 20px;
+    }
+
+    nav ul.show {
+        display: flex;
+    }
+
+    nav ul li {
+        margin: 10px 0;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .hero h1 {
+        font-size: 32px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .chart-card {
+        max-width: 100%;
+    }
+}
