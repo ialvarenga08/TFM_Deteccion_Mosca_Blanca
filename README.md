@@ -160,7 +160,7 @@ The object detection models (SSD MobileNetV1/V2, YOLOv11s) were trained using Go
 
 ## License
 
-This project is distributed under the [Choose a license, e.g., MIT, Apache 2.0] License. See the `LICENSE` file for more details.
+This project is distributed under the [UPCT] License. See the `LICENSE` file for more details.
 
 ## Acknowledgements
 
