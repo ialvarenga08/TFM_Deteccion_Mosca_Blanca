@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFM | SMART AMBIENT - Temperature & Humidity</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="css/coffe.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/css/black_hole6.png" alt="Logo" class="logo-img">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="temp-humidity.html">TEMPERATURE & HUMIDITY</a></li>
+                <li><a href="object-detection.html">OBJECT DETECTION</a></li>
+                <li><a href="whiteflies-data.html">WHITEFLIES DATA</a></li>
+            </ul>
+            <div class="hamburger">☰</div>
+        </nav>
+    </header>
+
+    <section class="content">
+        <div class="container_2">
+            <div class="time-range-selector">
+                <label for="timeRangeType">Intervalo de tiempo:</label>
+                <select id="timeRangeType">
+                    <option value="semana">Semana</option>
+                    <option value="month">Mes</option>
+                </select>
+                <label for="timeRangeValue" id="timeRangeValueLabel">Seleccione Semana:</label>
+                <select id="timeRangeValue"></select>
+            </div>
+        </div>
+        <div class="chart-container">
+            <div class="chart-card">
+                <canvas id="tempChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <canvas id="humidityChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let tempChart, humidityChart;
+
+        function populateTimeRangeOptions(type) {
+            const timeRangeValue = document.getElementById('timeRangeValue');
+            timeRangeValue.innerHTML = '';
+
+            if (type === 'semana') {
+                const months = [
+                    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+                ];
+
+                let weekCount = 1;
+
+                for (let m = 0; m < 12; m++) {
+                    const monthLabel = document.createElement("option");
+                    monthLabel.text = months[m];
+                    monthLabel.disabled = true;
+                    timeRangeValue.appendChild(monthLabel);
+
+                    let weeksInMonth = (m === 0 || m === 2 || m === 4 || m === 6 || m === 7 || m === 9 || m === 11) ? 5 : 4;
+                    if (m === 1) weeksInMonth = 4;
+
+                    for (let w = 0; w < weeksInMonth; w++) {
+                        if (weekCount > 52) break;
+
+                        const weekOption = document.createElement("option");
+                        weekOption.value = weekCount;
+                        weekOption.text = `Semana ${weekCount}`;
+                        timeRangeValue.appendChild(weekOption);
+
+                        weekCount++;
+                    }
+                }
+
+                document.getElementById('timeRangeValueLabel').textContent = 'Seleccione semana:';
+
+            } else if (type === 'month') {
+                const months = [
+                    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                ];
+
+                months.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1;
+                    option.text = month;
+                    timeRangeValue.appendChild(option);
+                });
+
+                document.getElementById('timeRangeValueLabel').textContent = 'Seleccione Mes:';
+            }
+        }
+
+        function filterDataByTimeRange(data, type, value) {
+            return data.filter(entry => {
+                const entryDate = new Date(entry.x);
+                if (type === 'semana') {
+                    const entryWeek = getWeekNumber(entryDate);
+                    return entryWeek === value;
+                } else if (type === 'month') {
+                    const entryMonth = entryDate.getMonth() + 1;
+                    return entryMonth === value;
+                }
+                return true;
+            });
+        }
+
+        function getWeekNumber(date) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+            const yearStart = new Date(d.getFullYear(), 0, 1);
+            return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+        }
+
+        async function fetchData() {
+            try {
+                const response = await fetch('fetch_data.php');
+                const rawData = await response.json();
+                return rawData.map(entry => ({
+                    x: new Date(entry.timestamp),
+                    yTemp: parseFloat(entry.temperature),
+                    yHumidity: parseFloat(entry.humidity),
+                }));
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return [];
+            }
+        }
+
+        function drawChart(data) {
+            if (data.length === 0) {
+                console.error('No data available to render the chart.');
+                return;
+            }
+
+            const commonOptions = {
+                responsive: true,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            displayFormats: {
+                                millisecond: 'dd-MMM HH:mm',
+                                second: 'dd-MMM HH:mm',
+                                minute: 'dd-MMM HH:mm',
+                                hour: 'dd-MMM HH:mm',
+                                day: 'dd-MMM HH:mm',
+                                week: 'dd-MMM HH:mm',
+                                month: 'dd-MMM HH:mm',
+                                year: 'dd-MMM HH:mm',
+                            },
+                        },
+                        ticks: {
+                            source: 'data',
+                            maxRotation: 55,
+                            minRotation: 20,
+                            autoSkip: false,
+                            color: '#68684eb2',
+                            callback: function (value, index, values) {
+                                const timestamp = new Date(value);
+                                const formatter = new Intl.DateTimeFormat('en-GB', {
+                                    day: '2-digit',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hourCycle: 'h23',
+                                });
+
+                                const formattedDate = formatter.format(timestamp);
+
+                                const totalValues = values.length;
+                                const firstIndex = 0;
+                                const middleIndex = Math.floor(totalValues / 2);
+                                const lastIndex = totalValues - 1;
+
+                                if (index === firstIndex || index === middleIndex || index === lastIndex) {
+                                    return formattedDate;
+                                }
+                                return '';
+                            },
+                        },
+                        grid: {
+                            color: '#2d2d2d',
+                        },
+                    },
+                },
+            };
+
+            const tempData = data.map(entry => ({
+                x: entry.x,
+                y: entry.yTemp,
+            }));
+
+            const humidityData = data.map(entry => ({
+                x: entry.x,
+                y: entry.yHumidity,
+            }));
+
+            const tempConfig = {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Temperatura',
+                            data: tempData,
+                            borderColor: '#ff6384',
+                            tension: 0.1,
+                        },
+                    ],
+                },
+                options: commonOptions,
+            };
+
+            const humidityConfig = {
+                type: 'line',
+                data: {
+                    datasets: [
+                        {
+                            label: 'Humedad',
+                            data: humidityData,
+                            borderColor: '#36a2eb',
+                            tension: 0.1,
+                        },
+                    ],
+                },
+                options: commonOptions,
+            };
+
+            if (tempChart) tempChart.destroy();
+            if (humidityChart) humidityChart.destroy();
+
+            const ctxTemp = document.getElementById('tempChart').getContext('2d');
+            const ctxHumidity = document.getElementById('humidityChart').getContext('2d');
+
+            tempChart = new Chart(ctxTemp, tempConfig);
+            humidityChart = new Chart(ctxHumidity, humidityConfig);
+        }
+
+        document.getElementById('timeRangeType').addEventListener('change', (event) => {
+            const selectedType = event.target.value;
+            populateTimeRangeOptions(selectedType);
+        });
+
+        document.getElementById('timeRangeValue').addEventListener('change', async (event) => {
+            const selectedType = document.getElementById('timeRangeType').value;
+            const selectedValue = parseInt(event.target.value, 10);
+
+            const data = await fetchData();
+            const filteredData = filterDataByTimeRange(data, selectedType, selectedValue);
+            drawChart(filteredData);
+        });
+
+        populateTimeRangeOptions('semana');
+        fetchData().then(data => {
+            const initialWeek = 1;
+            const filteredData = filterDataByTimeRange(data, 'week', initialWeek);
+            drawChart(filteredData);
+        });
+
+        // Hamburger menu toggle
+        document.querySelector('.hamburger').addEventListener('click', () => {
+            document.querySelector('nav ul').classList.toggle('show');
+        });
+    </script>
+</body>
+</html>

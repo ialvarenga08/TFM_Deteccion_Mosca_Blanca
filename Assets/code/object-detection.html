@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFM | SMART AMBIENT - Object Detection</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="css/coffe.png">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/css/black_hole6.png" alt="Logo" class="logo-img">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="temp-humidity.html">TEMPERATURE & HUMIDITY</a></li>
+                <li><a href="object-detection.html">OBJECT DETECTION</a></li>
+                <li><a href="whiteflies-data.html">WHITEFLIES DATA</a></li>
+            </ul>
+            <div class="hamburger">☰</div>
+        </nav>
+    </header>
+
+    <section class="content">
+        <div class="video-container">
+            <h2 class="text-format">Detección de Objetos en Tiempo Real</h2>
+            <img src="http://192.168.1.133:5000/video_feed" alt="Live Video Stream" class="video">
+        </div>
+    </section>
+
+    <script>
+        // Hamburger menu toggle
+        document.querySelector('.hamburger').addEventListener('click', () => {
+            document.querySelector('nav ul').classList.toggle('show');
+        });
+    </script>
+</body>
+</html>

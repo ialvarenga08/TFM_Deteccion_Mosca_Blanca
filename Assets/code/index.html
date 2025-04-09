@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFM | SMART AMBIENT</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="css/coffe.png">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/css/black_hole6.png" alt="Logo" class="logo-img">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="temp-humidity.html">TEMPERATURE & HUMIDITY</a></li>
+                <li><a href="object-detection.html">OBJECT DETECTION</a></li>
+                <li><a href="whiteflies-data.html">WHITEFLIES DATA</a></li>
+            </ul>
+            <div class="hamburger">☰</div>
+        </nav>
+    </header>
+    <section class="hero">
+        <h1>TFM | SMART AMBIENT</h1>
+        <p>Monitor your farm with real-time data on temperature, humidity, and pest detection.</p>
+        <div class="cta">
+            <button>EXPLORE NOW</button>
+        </div>
+        <a href="temp-humidity.html" class="availability">VIEW DATA ></a>
+    </section>
+
+    <script>
+        // Hamburger menu toggle
+        document.querySelector('.hamburger').addEventListener('click', () => {
+            document.querySelector('nav ul').classList.toggle('show');
+        });
+    </script>
+</body>
+</html>

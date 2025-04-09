@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFM | SMART AMBIENT - Whiteflies Data</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/x-icon" href="css/coffe.png">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="css/black_hole3.png" alt="Logo" class="logo-img">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="temp-humidity.html">TEMPERATURE & HUMIDITY</a></li>
+                <li><a href="object-detection.html">OBJECT DETECTION</a></li>
+                <li><a href="whiteflies-data.html">WHITEFLIES DATA</a></li>
+            </ul>
+            <div class="hamburger">☰</div>
+        </nav>
+    </header>
+
+    <section class="content">
+        <div class="data-container">
+            <div id="whitefliesData"></div>
+        </div>
+    </section>
+
+    <script>
+        async function fetchWhitefliesData() {
+            try {
+                const response = await fetch('fetch_whiteflies_data.php');
+                const data = await response.json();
+                const container = document.getElementById('whitefliesData');
+                container.innerHTML = '';
+
+                data.forEach(entry => {
+                    const entryDiv = document.createElement('div');
+                    entryDiv.classList.add('data-entry');
+                    entryDiv.innerHTML = `
+                        <p><strong>Timestamp:</strong> ${new Date(entry.timestamp).toLocaleString()}</p>
+                        <p><strong>Whiteflies Count:</strong> ${entry.count}</p>
+                        <img src="${entry.image_url}" alt="Whiteflies Detection" class="data-image">
+                    `;
+                    container.appendChild(entryDiv);
+                });
+            } catch (error) {
+                console.error('Error fetching whiteflies data:', error);
+            }
+        }
+
+        fetchWhitefliesData();
+        setInterval(fetchWhitefliesData, 30000);
+
+        // Hamburger menu toggle
+        document.querySelector('.hamburger').addEventListener('click', () => {
+            document.querySelector('nav ul').classList.toggle('show');
+        });
+    </script>
+</body>
+</html>

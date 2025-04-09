@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TFM | SMART AMBIENT </title>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+</head>
+<body>
+	<h1>TFM | SMART AMBIENT</h1>
+
+  <div class="container_2">
+  <div class="time-range-selector">
+    <label for="timeRangeType">Select Time Range Type:</label>
+    <select id="timeRangeType">
+      <option value="week">Week</option>
+      <option value="month">Month</option>
+    </select>
+
+    <label for="timeRangeValue" id="timeRangeValueLabel">Select Week:</label>
+    <select id="timeRangeValue">
+      <!-- Options for weeks (1-52) will be populated dynamically -->
+    </select>
+  </div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-card">
+      <h2>Temperatura</h2>
+      <canvas id="tempChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h2>Humedad</h2>
+      <canvas id="humidityChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    let tempChart, humidityChart;
+
+    // Function to populate week or month options
+    // Function to populate week or month options
+function populateTimeRangeOptions(type) {
+    const timeRangeValue = document.getElementById('timeRangeValue');
+    timeRangeValue.innerHTML = ''; // Clear existing options
+
+    if (type === 'week') {
+        const months = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        let weekCount = 1;
+
+        for (let m = 0; m < 12; m++) {
+            // Create a disabled label for the month
+            const monthLabel = document.createElement("option");
+            monthLabel.text = months[m];
+            monthLabel.disabled = true;
+            timeRangeValue.appendChild(monthLabel);
+
+            // Determine the number of weeks in each month (handling 5-week months correctly)
+            let weeksInMonth = (m === 0 || m === 2 || m === 4 || m === 6 || m === 7 || m === 9 || m === 11) ? 5 : 4;
+            if (m === 1) weeksInMonth = 4; // February (assuming non-leap year)
+
+            for (let w = 0; w < weeksInMonth; w++) {
+                if (weekCount > 52) break; // Ensure we don't exceed 52 weeks
+
+                const weekOption = document.createElement("option");
+                weekOption.value = weekCount;
+                weekOption.text = `Week ${weekCount}`;
+                timeRangeValue.appendChild(weekOption);
+
+                weekCount++;
+            }
+        }
+
+        document.getElementById('timeRangeValueLabel').textContent = 'Select Week:';
+
+    } else if (type === 'month') {
+        // Populate with month names
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        months.forEach((month, index) => {
+            const option = document.createElement('option');
+            option.value = index + 1; // Month number (1-12)
+            option.text = month;
+            timeRangeValue.appendChild(option);
+        });
+
+        document.getElementById('timeRangeValueLabel').textContent = 'Select Month:';
+    }
+}
+
+
+    // Function to filter data based on selected week or month
+    function filterDataByTimeRange(data, type, value) {
+      return data.filter(entry => {
+        const entryDate = new Date(entry.x);
+        if (type === 'week') {
+          // Get the week number of the entry date
+          const entryWeek = getWeekNumber(entryDate);
+          return entryWeek === value;
+        } else if (type === 'month') {
+          // Get the month of the entry date (1-12)
+          const entryMonth = entryDate.getMonth() + 1; // Months are 0-indexed in JavaScript
+          return entryMonth === value;
+        }
+        return true; // No filter applied
+      });
+    }
+
+    // Function to get the ISO week number of a date
+    function getWeekNumber(date) {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + 4 - (d.getDay() || 7)); // Set to Thursday of the week
+      const yearStart = new Date(d.getFullYear(), 0, 1);
+      return Math.ceil(((d - yearStart) / 86400000 + 1) / 7);
+    }
+
+    async function fetchData() {
+      try {
+        const response = await fetch('fetch_data.php');
+        const rawData = await response.json();
+
+        return rawData.map(entry => ({
+          x: new Date(entry.timestamp),
+          yTemp: parseFloat(entry.temperature),
+          yHumidity: parseFloat(entry.humidity),
+        }));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        return [];
+      }
+    }
+
+    function drawChart(data) {
+      if (data.length === 0) {
+        console.error('No data available to render the chart.');
+        return;
+      }
+
+      const commonOptions = {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              displayFormats: {
+                millisecond: 'dd-MMM HH:mm',
+                second: 'dd-MMM HH:mm',
+                minute: 'dd-MMM HH:mm',
+                hour: 'dd-MMM HH:mm',
+                day: 'dd-MMM HH:mm',
+                week: 'dd-MMM HH:mm',
+                month: 'dd-MMM HH:mm',
+                year: 'dd-MMM HH:mm',
+              },
+            },
+            ticks: {
+              source: 'data',
+              maxRotation: 55,
+              minRotation: 20,
+              autoSkip: false,
+              color: '#68684eb2',
+              callback: function (value, index, values) {
+                const timestamp = new Date(value);
+                const formatter = new Intl.DateTimeFormat('en-GB', {
+                  day: '2-digit',
+                  month: 'short',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hourCycle: 'h23',
+                });
+
+                const formattedDate = formatter.format(timestamp);
+
+                const totalValues = values.length;
+                const firstIndex = 0;
+                const middleIndex = Math.floor(totalValues / 2);
+                const lastIndex = totalValues - 1;
+
+                if (index === firstIndex || index === middleIndex || index === lastIndex) {
+                  return formattedDate;
+                }
+                return '';
+              },
+            },
+            grid: {
+              color: '#2d2d2d',
+            },
+          },
+        },
+      };
+
+      const tempData = data.map(entry => ({
+        x: entry.x,
+        y: entry.yTemp,
+      }));
+
+      const humidityData = data.map(entry => ({
+        x: entry.x,
+        y: entry.yHumidity,
+      }));
+
+      const tempConfig = {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: 'Temperature',
+              data: tempData,
+              borderColor: '#ff6384',
+              tension: 0.1,
+            },
+          ],
+        },
+        options: commonOptions,
+      };
+
+      const humidityConfig = {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: 'Humidity',
+              data: humidityData,
+              borderColor: '#36a2eb',
+              tension: 0.1,
+            },
+          ],
+        },
+        options: commonOptions,
+      };
+
+      if (tempChart) tempChart.destroy();
+      if (humidityChart) humidityChart.destroy();
+
+      const ctxTemp = document.getElementById('tempChart').getContext('2d');
+      const ctxHumidity = document.getElementById('humidityChart').getContext('2d');
+
+      tempChart = new Chart(ctxTemp, tempConfig);
+      humidityChart = new Chart(ctxHumidity, humidityConfig);
+    }
+
+    // Event listener for the time range type drop-down
+    document.getElementById('timeRangeType').addEventListener('change', (event) => {
+      const selectedType = event.target.value;
+      populateTimeRangeOptions(selectedType);
+    });
+
+    // Event listener for the time range value drop-down
+    document.getElementById('timeRangeValue').addEventListener('change', async (event) => {
+      const selectedType = document.getElementById('timeRangeType').value;
+      const selectedValue = parseInt(event.target.value, 10);
+
+      const data = await fetchData();
+      const filteredData = filterDataByTimeRange(data, selectedType, selectedValue);
+      drawChart(filteredData);
+    });
+
+    // Initial setup
+    populateTimeRangeOptions('week'); // Default to week selection
+    fetchData().then(data => {
+      const initialWeek = 1; // Default to Week 1
+      const filteredData = filterDataByTimeRange(data, 'week', initialWeek);
+      drawChart(filteredData);
+    });
+  </script>
+
+  <div class="video-container">
+    <h2 class="text-format">Detección de Objetos en Tiempo Real</h2>
+    <img src="http://192.168.1.133:5000/video_feed" alt="Live Video Stream" class="video">
+  </div>
+</body>
+</html>
+
